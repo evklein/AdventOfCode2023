@@ -1,0 +1,69 @@
+﻿@page "/Day4"
+@using System.Text
+@inherits ProblemBaseComponent<string, string>
+
+<h3>Day4</h3>
+
+<h5>Answer (A): @answerA</h5>
+<h5>Answer (B): @answerB</h5>
+
+@code {
+    private int answerA = 0;
+    private int answerB = 0;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        string text = @"";
+        answerA = DoPartA(text);
+        answerB = DoPartB(text, 0);
+    }
+
+    private int DoPartA(string text)
+    {
+        int totalPoints = 0;
+        List<string> lines = text.Split("\r\n").Where(l => !string.IsNullOrEmpty(l)).ToList();
+        foreach (var line in lines)
+        {
+            List<string> values = line.Substring(line.IndexOf(":") + 1).Split("|").ToList();
+            (List<int> winningNumbers, List<int> myNumbers) = (convertNumbersStringToProperList(values[0]), convertNumbersStringToProperList(values[1]));
+            int numberOfMatches = myNumbers.Intersect(winningNumbers).Count();
+            totalPoints += 1 << (numberOfMatches - 1);
+        }
+        return totalPoints;
+    }
+
+    private List<int> convertNumbersStringToProperList(string rawNumbers)
+    {
+        return rawNumbers.Split(" ").Where(s => !string.IsNullOrEmpty(s)).Select(s => Int32.Parse(s)).ToList();
+    }
+
+    private int DoPartB(string text, int index)
+    {
+        List<string> lines = text.Split("\r\n").Where(l => !string.IsNullOrEmpty(l)).ToList();
+        int total = 0;
+        for (int i = 0; i < lines.Count; i++)
+        {
+            total += GetNumberOfCards(lines, i);
+        }
+
+        return total + lines.Count;
+    }
+
+    private int GetNumberOfCards(List<string> lines, int index)
+    {
+        int totalCards = 0;
+        var line = lines[index];
+
+        List<string> values = line.Substring(line.IndexOf(":") + 1).Split("|").ToList();
+        (List<int> winningNumbers, List<int> myNumbers) = (convertNumbersStringToProperList(values[0]), convertNumbersStringToProperList(values[1]));
+        int numberOfMatches = myNumbers.Intersect(winningNumbers).Count();
+        totalCards += numberOfMatches;
+
+        for (int i = 0; i < numberOfMatches; i++)
+        {
+            totalCards += GetNumberOfCards(lines, index + i + 1);
+        }
+        return totalCards;
+    }
+}
