@@ -1,0 +1,92 @@
+﻿@page "/Day6"
+@using System.Text
+@inherits ProblemBaseComponent<string, string>
+
+<h3>Day6</h3>
+
+<h5>Answer (A): @answerA</h5>
+<h5>Answer (B): @answerB</h5>
+
+@code {
+    private int answerA = 0;
+    private long answerB = 0;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        string sampleText = @"Time:        40     82     91     66
+Distance:   277   1338   1349   1063";
+        answerA = DoPartA(sampleText);
+        answerB = DoPartB(sampleText);
+    }
+
+    private int DoPartA(string text)
+    {
+        Dictionary<int, int> raceRecordsAndCorrespondingTimes = ParseInputPartA(text);
+        List<int> numberOfWaysToBeatEachRace = new();
+
+        // Brute force
+        foreach (KeyValuePair<int, int> race in raceRecordsAndCorrespondingTimes)
+        {
+            int numberOfPossibleWaysToBeatRecord = 0;
+            int raceLength = race.Key;
+            int raceRecord = race.Value;
+
+            for (int i = 0; i < raceLength; i++)
+            {
+                int speed = i;
+                int resultingDistance = speed * (raceLength - speed);
+                if (resultingDistance > raceRecord)
+                {
+                    numberOfPossibleWaysToBeatRecord++;
+                }
+            }
+            numberOfWaysToBeatEachRace.Add(numberOfPossibleWaysToBeatRecord);
+        }
+        return numberOfWaysToBeatEachRace.Aggregate((a, b) => a * b);
+    }
+
+    private long DoPartB(string text)
+    {
+        (long raceLength, long raceRecord) = ParseInputPartB(text);
+        long numberOfPossibleWaysToBeatRecord = 0;
+
+        for (long i = 0; i < raceLength; i++)
+        {
+            long speed = i;
+            long resultingDistance = speed * (raceLength - speed);
+            if (resultingDistance > raceRecord)
+            {
+                numberOfPossibleWaysToBeatRecord++;
+            }
+        }
+
+        return numberOfPossibleWaysToBeatRecord;
+    }
+
+    #region Parsing
+    private Dictionary<int, int> ParseInputPartA(string text)
+    {
+        List<string> lines = text.Split("\r\n").ToList();
+        (List<int> raceTimes, List<int> raceRecords) = (splitLineIntoListOfValues(lines[0]), splitLineIntoListOfValues(lines[1]));
+        return raceTimes.Zip(raceRecords, (time, record) => new { time, record })
+                        .ToDictionary(x => x.time, x => x.record);
+    }
+
+    private List<int> splitLineIntoListOfValues(string line)
+    {
+        return line.Split(":")[1]
+                   .Split(" ", StringSplitOptions.RemoveEmptyEntries)
+                   .Select(number => Int32.Parse(number))
+                   .ToList();
+    }
+
+    private (long, long) ParseInputPartB(string text)
+    {
+        List<string> lines = text.Split("\r\n").ToList();
+        long raceLength = Int64.Parse(lines[0].Split(":")[1].Replace(" ", ""));
+        long raceRecord = Int64.Parse(lines[1].Split(":")[1].Replace(" ", ""));
+        return (raceLength, raceRecord);
+    }
+    #endregion Parsing
+}

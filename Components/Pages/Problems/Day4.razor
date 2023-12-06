@@ -55,8 +55,10 @@
         int totalCards = 0;
         var line = lines[index];
 
+        // Parsing
         List<string> values = line.Substring(line.IndexOf(":") + 1).Split("|").ToList();
         (List<int> winningNumbers, List<int> myNumbers) = (convertNumbersStringToProperList(values[0]), convertNumbersStringToProperList(values[1]));
+        
         int numberOfMatches = myNumbers.Intersect(winningNumbers).Count();
         totalCards += numberOfMatches;
 
