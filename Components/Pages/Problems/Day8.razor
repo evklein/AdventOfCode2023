@@ -776,9 +776,6 @@ XXX = (XXX, XXX)";
     private long DoPartB(string text)
     {
         (string instructions, List<Node> rootNodes) = ParseInputPartB(text);
-
-        List<Node> replacementNodes = new List<Node>();
-
         Dictionary<Node, long> nodesAndTheirRequiredNumberOfSteps = new();
 
         foreach (var node in rootNodes)
