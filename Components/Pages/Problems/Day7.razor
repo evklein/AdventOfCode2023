@@ -37,8 +37,6 @@ QQQJA 483";
     {
         Dictionary<Hand, int> handsAndBids = ParseInput(text, true);
         SortedDictionary<Hand, int> sortedHands = new SortedDictionary<Hand, int>(handsAndBids, new HandComparer());
-        var x = sortedHands.Keys;
-        var y = sortedHands.Values;
         return sortedHands.Values.Select((bid, index) => bid * (index + 1)).Sum();
     }
 
